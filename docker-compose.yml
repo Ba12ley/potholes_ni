@@ -1,0 +1,30 @@
+services:
+
+  mongo:
+    container_name: pothole_mongodb_db
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE_NAME: ${DB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      - ./mongo-volume:/data/db
+    ports:
+      - 2000:27017
+
+
+  api:
+    container_name: pothole_api
+    build: .
+    command: bash -c "uvicorn main:api --host 0.0.0.0 --port 8000 --reload"
+    environment:
+      - ENVIRONMENT=development
+      - TESTING=0
+    volumes:
+      - .:/pothole_mongodb_db
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongo
+    restart: always

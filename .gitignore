@@ -1,1 +1,7 @@
 /.env
+.idea
+/nginx/
+/mongo-volume
+/data
+.venv
+/data
