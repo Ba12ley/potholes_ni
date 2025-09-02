@@ -31,7 +31,7 @@ class Pothole(Document):
         ]
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             'pothole': {
                 'schema_version': 'version 0.1',
                 'recorded_date': datetime.datetime.utcnow(),
