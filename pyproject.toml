@@ -8,6 +8,7 @@ dependencies = [
     "beautifulsoup4>=4.13.5",
     "dotenv>=0.9.9",
     "fastapi>=0.116.1",
+    "ipyleaflet>=0.20.0",
     "motor>=3.7.1",
     "polars>=1.32.3",
     "pyproj>=3.7.2",

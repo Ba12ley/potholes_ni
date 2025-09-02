@@ -2,12 +2,14 @@ import fastapi
 import uvicorn
 import os
 import requests
+from beanie.odm import views
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 from db.database_mongo import init_ni_potholes_db
 from services.parse_xml_to_json import parse_xml_to_dict
 from services.json_to_model import write_data_to_db
-
+from services.make_geojson import export_potholes_to_geojson
+import views.web_view
 from api_calls import potholes
 
 load_dotenv('.env')
@@ -24,7 +26,7 @@ async def lifespan(app: fastapi.FastAPI):
     await init_ni_potholes_db(conn_str)
     await write_data_to_db()
     print('Database Initialised')
-
+    await export_potholes_to_geojson()
     yield
 
     print('Database Shutdown')
@@ -38,6 +40,7 @@ def main():
 
 def configure():
     api.include_router(potholes.router, tags=['potholes'])
+    api.include_router(views.web_view.router, tags=['web_view'])
 
 
 
