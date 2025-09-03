@@ -17,9 +17,17 @@ conn_str = f"{os.environ['MONGODB_URL']}"
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
     geojson_file = Path("data/potholes.geojson")
-    client = await init_ni_potholes_db(conn_str)
-    if not geojson_file.exists():
-        print("GeoJSON file already exists, run initialization")
+
+    try:
+        client = await init_ni_potholes_db(conn_str)
+        print("Database initialized")
+    except Exception as e:
+        print(f"Failed to initialize database: {e}")
+        client = None
+    if geojson_file.exists():
+        print("GeoJSON file already exists, skipping initialization")
+    else:
+        print("GeoJSON file not found, run initialization")
 
     yield
 
