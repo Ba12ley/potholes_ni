@@ -13,6 +13,7 @@ dependencies = [
     "polars>=1.32.3",
     "pyproj>=3.7.2",
     "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
     "requests>=2.32.5",
     "uvicorn>=0.35.0",
     "xmltodict>=0.14.2",
