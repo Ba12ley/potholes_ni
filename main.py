@@ -25,13 +25,11 @@ async def lifespan(app: fastapi.FastAPI):
         print(f"Failed to initialize database: {e}")
         client = None
 
-    yield
-
     if client:
         asyncio.create_task(export_potholes_to_geojson())
         print("GeoJSON export scheduled")
+    yield
 
-    # --- Shutdown ---
     if client:
         client.close()
         print("Database shutdown")

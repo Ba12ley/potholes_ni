@@ -59,7 +59,7 @@ services:
       - ./data:/app/data
       - .:/pothole_mongodb_db
     depends_on:
-      - mongo  # Make sure MongoDB is running before data initialization
+      - mongo
     deploy:
       resources:
         limits:
