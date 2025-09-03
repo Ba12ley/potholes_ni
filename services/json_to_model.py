@@ -29,8 +29,8 @@ async def write_data_to_db():
                     lat = xy2latlon(easting, northing)[0]
                     lon = xy2latlon(easting, northing)[1]
                     grid = xy2irishgrid(easting, northing)
-                    pprint(
-                        f'defect_detail: {defect_detail}, date_recorded: {date_recorded}, easting: {easting}, northing: {northing}, lat: {lat}, lon: {lon}, grid: {grid}, status: {status}')
+                    # pprint(
+                    #     f'defect_detail: {defect_detail}, date_recorded: {date_recorded}, easting: {easting}, northing: {northing}, lat: {lat}, lon: {lon}, grid: {grid}, status: {status}')
                     pothole = Pothole(defect_detail=defect_detail,
                                       date_recorded=date_recorded,
                                       easting=easting, northing=northing,
