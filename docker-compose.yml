@@ -17,7 +17,7 @@ services:
   api:
     container_name: pothole_api
     build: .
-    command: bash -c "uvicorn main:api --host 0.0.0.0 --port 8000 --workers 2 --timeout-keep-alive 30"
+    command: bash -c "uvicorn main:api --host 0.0.0.0 --port 8000 --timeout-keep-alive 15 --limit-max-requests 1000"
     environment:
       - ENVIRONMENT=development
       - TESTING=0

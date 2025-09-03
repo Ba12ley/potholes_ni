@@ -23,13 +23,14 @@ print(f'File downloaded')
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
     parse_xml_to_dict("./data/current_year.xml")
-    await init_ni_potholes_db(conn_str)
+    client = await init_ni_potholes_db(conn_str)
     await write_data_to_db()
     print('Database Initialised')
     await export_potholes_to_geojson()
     yield
 
     print('Database Shutdown')
+    client.close()
 api = fastapi.FastAPI(lifespan=lifespan)
 
 
