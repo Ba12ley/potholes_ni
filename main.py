@@ -2,6 +2,7 @@ import fastapi
 import uvicorn
 import os
 import requests
+import gc
 from beanie.odm import views
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
@@ -32,6 +33,9 @@ async def lifespan(app: fastapi.FastAPI):
         await write_data_to_db()
         print('Database Initialised')
         await export_potholes_to_geojson()
+        collected = gc.collect()
+        print(f'Garbage collected {collected} objects')
+        gc.collect()
     else:
         print("GeoJSON file already exists, skipping initialization")
         # Still need to initialize the client for the app to work
