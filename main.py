@@ -4,7 +4,7 @@ import os
 from beanie.odm import views
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
-from pathlib import Path
+import asyncio
 from db.database_mongo import init_ni_potholes_db
 from services.make_geojson import export_potholes_to_geojson
 import views.web_view
@@ -16,12 +16,10 @@ conn_str = f"{os.environ['MONGODB_URL']}"
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
-    geojson_file = Path("data/potholes.geojson")
-
     try:
         client = await init_ni_potholes_db(conn_str)
         print("Database initialized")
-        await export_potholes_to_geojson()
+
 
     except Exception as e:
         print(f"Failed to initialize database: {e}")
@@ -29,8 +27,14 @@ async def lifespan(app: fastapi.FastAPI):
 
     yield
 
-    print('Database Shutdown')
-    client.close()
+    if client:
+        asyncio.create_task(export_potholes_to_geojson())
+        print("GeoJSON export scheduled")
+
+    # --- Shutdown ---
+    if client:
+        client.close()
+        print("Database shutdown")
 
 
 api = fastapi.FastAPI(lifespan=lifespan)
