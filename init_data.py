@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from services.parse_xml_to_json import parse_xml_to_dict
 from services.json_to_model import write_data_to_db
-from services.make_geojson import export_potholes_to_geojson
+
 from db.database_mongo import init_ni_potholes_db
 from dotenv import load_dotenv
 
@@ -16,6 +16,7 @@ with open(f'./data/current_year.xml', 'wb') as f:
     f.write(response.content)
 print(f'File downloaded')
 
+
 async def initialize_data():
     geojson_file = Path("data/potholes.geojson")
 
@@ -24,7 +25,7 @@ async def initialize_data():
         parse_xml_to_dict("./data/current_year.xml")
         client = await init_ni_potholes_db(conn_str)
         await write_data_to_db()
-        await export_potholes_to_geojson()
+
         client.close()
         print("Data initialization complete")
     else:

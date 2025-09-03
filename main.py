@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 from pathlib import Path
 from db.database_mongo import init_ni_potholes_db
-
+from services.make_geojson import export_potholes_to_geojson
 import views.web_view
 from api_calls import potholes
 
@@ -21,13 +21,11 @@ async def lifespan(app: fastapi.FastAPI):
     try:
         client = await init_ni_potholes_db(conn_str)
         print("Database initialized")
+        await export_potholes_to_geojson()
+
     except Exception as e:
         print(f"Failed to initialize database: {e}")
         client = None
-    if geojson_file.exists():
-        print("GeoJSON file already exists, skipping initialization")
-    else:
-        print("GeoJSON file not found, run initialization")
 
     yield
 
