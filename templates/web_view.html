@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
+
 {% block content %}
-    <div>
-        {{ map_file | safe }}
-    </div>
+<div style="width: 100%; max-width: 900px; margin: 0 auto; position: relative; padding-bottom: 56.25%; height: 0;">
+    {{ map_file | safe | replace('<iframe', '<iframe style="position:absolute; top:0; left:0; width:100%; height:100%;"') }}
+</div>
 {% endblock %}
