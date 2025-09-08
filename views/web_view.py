@@ -2,7 +2,7 @@ import json
 
 import fastapi
 from ipyleaflet import (
-    Map, Marker, AwesomeIcon, Popup
+    Map, GeoJSON
 )
 from ipywidgets import HTML
 from ipywidgets.embed import embed_minimal_html
@@ -23,35 +23,35 @@ def make_map(filename='map.html'):
     with open('data/potholes.geojson') as f:
         data = json.load(f)
 
-    # Create markers for each point feature with popups
-    for feature in data['features']:
-        if feature['geometry']['type'] == 'Point':
-            coords = feature['geometry']['coordinates']
-            props = feature.get('properties', {})
+    # Style for the points
+    point_style = {
+        "color": "darkred",
+        "radius": 6,
+        "fillColor": "red",
+        "weight": 2,
+        "opacity": 0.8,
+        "fillOpacity": 0.6,
+    }
 
-            # Create popup content
-            popup_html = f"""
-            <div style="font-family: Arial, sans-serif;">
-                <b>Reference:</b> {props.get('instruction_reference', 'N/A')}<br>
-                <b>Detail:</b> {props.get('defect_detail', 'N/A')}<br>
-                <b>Date:</b> {props.get('date_recorded', 'N/A')[:10]}<br>
-                <b>Status:</b> {props.get('status', 'N/A')}<br>
-                <b>Grid:</b> {props.get('grid', 'N/A')}
-            </div>
-            """
+    # Create hover handler
+    def hover_handler(event, feature, **kwargs):
+        if feature['properties']:
+            props = feature['properties']
+            geo_json.tooltip = HTML(f"""
+                <b>{props.get('instruction_reference', 'N/A')}</b><br>
+                {props.get('defect_detail', 'N/A')}<br>
+                Status: {props.get('status', 'N/A')}
+            """)
 
-            icon = AwesomeIcon(name='warning', marker_color='red', icon_color='white')
-            marker = Marker(
-                location=(coords[1], coords[0]),  # GeoJSON is [lng, lat], Marker needs (lat, lng)
-                icon=icon,
-                title=props.get('instruction_reference', 'Pothole')  # Tooltip on hover
-            )
+    geo_json = GeoJSON(
+        data=data,
+        point_style=point_style,
+        hover_style={'fillColor': 'orange', 'radius': 8}
+    )
 
-            # Add popup
-            popup = Popup(child=HTML(popup_html), max_width=300, min_width=200)
-            marker.popup = popup
+    geo_json.on_hover(hover_handler)
 
-            m.add(marker)
+    m.add(geo_json)
 
     embed_minimal_html(filename, views=[m], title='Potholes NI')
 
