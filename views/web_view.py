@@ -2,7 +2,7 @@ import json
 
 import fastapi
 from ipyleaflet import (
-    Map, GeoJSON, AwesomeIcon
+    Map, Marker, AwesomeIcon, Popup
 )
 from ipywidgets.embed import embed_minimal_html
 from fastapi.responses import HTMLResponse
@@ -18,20 +18,40 @@ def make_map(filename='map.html'):
             tap_tolerance=15, world_copy_jump=False, close_popup_on_click=True, bounce_at_zoom_limits=True,
             keyboard=True, keyboard_pan_delta=80, keyboard_zoom_delta=1, inertia=True, inertia_deceleration=3000,
             inertia_max_speed=1500, zoom_control=True, attribution_control=True)
+
     with open('data/potholes.geojson') as f:
         data = json.load(f)
 
-    style = {
-        "color": "red",
-        "radius": 2,
-        "fillColor": "red",
-        "weight": 1,
-        "opacity": 0.6,
-        "fillOpacity": 0.6,
-    }
-    geo_json = GeoJSON(data=data, style=style, point_style=lambda feature: AwesomeIcon(name='warning', marker_color='red', icon_color='white'))
-    m.geojson = geo_json
-    m.add(geo_json)
+    # Create markers for each point feature with popups
+    for feature in data['features']:
+        if feature['geometry']['type'] == 'Point':
+            coords = feature['geometry']['coordinates']
+            props = feature.get('properties', {})
+
+            # Create popup content
+            popup_html = f"""
+            <div style="font-family: Arial, sans-serif;">
+                <b>Reference:</b> {props.get('instruction_reference', 'N/A')}<br>
+                <b>Detail:</b> {props.get('defect_detail', 'N/A')}<br>
+                <b>Date:</b> {props.get('date_recorded', 'N/A')[:10]}<br>
+                <b>Status:</b> {props.get('status', 'N/A')}<br>
+                <b>Grid:</b> {props.get('grid', 'N/A')}
+            </div>
+            """
+
+            icon = AwesomeIcon(name='warning', marker_color='red', icon_color='white')
+            marker = Marker(
+                location=(coords[1], coords[0]),  # GeoJSON is [lng, lat], Marker needs (lat, lng)
+                icon=icon,
+                title=props.get('instruction_reference', 'Pothole')  # Tooltip on hover
+            )
+
+            # Add popup
+            popup = Popup(child=HTML(popup_html), max_width=300, min_width=200)
+            marker.popup = popup
+
+            m.add(marker)
+
     embed_minimal_html(filename, views=[m], title='Potholes NI')
 
     with open(filename, 'r') as f:
