@@ -21,8 +21,6 @@ def make_map(filename='map.html'):
     with open('data/potholes.geojson') as f:
         data = json.load(f)
 
-    pothole_icon = AwesomeIcon(name='warning', marker_color='orange')
-
     style = {
         "color": "red",
         "radius": 2,
@@ -31,7 +29,7 @@ def make_map(filename='map.html'):
         "opacity": 0.6,
         "fillOpacity": 0.6,
     }
-    geo_json = GeoJSON(data=data, style=style, point_style=pothole_icon)
+    geo_json = GeoJSON(data=data, style=style, point_style=lambda feature: AwesomeIcon(name='warning', marker_color='red', icon_color='white'))
     m.geojson = geo_json
     m.add(geo_json)
     embed_minimal_html(filename, views=[m], title='Potholes NI')
