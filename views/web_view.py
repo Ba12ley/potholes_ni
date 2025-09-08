@@ -4,6 +4,7 @@ import fastapi
 from ipyleaflet import (
     Map, Marker, AwesomeIcon, Popup
 )
+from ipywidgets import HTML
 from ipywidgets.embed import embed_minimal_html
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
